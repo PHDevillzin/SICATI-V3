@@ -1,0 +1,5 @@
+{
+  "name": "SICAT - Sistema de Cadastro de Terceiros",
+  "description": "A web application for managing third-party registrations, users, and companies for SESI/SENAI, based on the SICAT visual identity.",
+  "requestFramePermissions": []
+}
