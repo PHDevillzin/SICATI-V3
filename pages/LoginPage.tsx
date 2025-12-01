@@ -26,7 +26,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     }
     
     try {
-        const response = await fetch('http://localhost:3001/users');
+        const response = await fetch('/api/users');
         if (!response.ok) {
              throw new Error('Falha ao buscar usuários');
         }
