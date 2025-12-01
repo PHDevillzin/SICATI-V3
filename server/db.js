@@ -18,6 +18,30 @@ class CustomDatabase extends Database {
       super(filename, ...args);
     }
   }
+
+  all(sql, ...args) {
+    let params = [];
+    let callback;
+
+    if (args.length > 0) {
+      const lastArg = args[args.length - 1];
+      if (typeof lastArg === 'function') {
+        callback = lastArg;
+        params = args.slice(0, args.length - 1);
+      } else {
+        params = args;
+      }
+    }
+
+    return super.all(sql, ...params, (err, rows) => {
+      if (callback) {
+        if (err) return callback(err);
+        // Clone rows to avoid read-only issues with Sequelize + LibSQL
+        const mutableRows = rows ? rows.map(row => ({ ...row })) : rows;
+        callback(null, mutableRows);
+      }
+    });
+  }
 }
 
 const customSqlite3 = {
@@ -28,7 +52,7 @@ const customSqlite3 = {
 const sequelize = new Sequelize({
   dialect: "sqlite",
   dialectModule: customSqlite3,
-  storage: dbUrl ? ":memory:" : path.join(__dirname, "database.sqlite"),
+  storage: dbUrl ? ":memory:" : "file:database.sqlite",
   logging: false,
 });
 

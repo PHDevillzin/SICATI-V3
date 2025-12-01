@@ -2,10 +2,10 @@ const http = require('http');
 
 const testEndpoints = async () => {
     const endpoints = [
-        { path: '/companies', method: 'GET' },
-        { path: '/third-parties', method: 'GET' },
-        { path: '/users', method: 'GET' },
-        { path: '/units', method: 'GET' }
+        { path: '/api/companies', method: 'GET' },
+        { path: '/api/third-parties', method: 'GET' },
+        { path: '/api/users', method: 'GET' },
+        { path: '/api/units', method: 'GET' }
     ];
 
     console.log('Starting API Verification...');
