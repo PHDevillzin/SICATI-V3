@@ -1,27 +1,36 @@
 import { Sequelize, DataTypes } from "sequelize";
 import path from "path";
 import { fileURLToPath } from "url";
+import sqlite3 from "@libsql/sqlite3";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const sequelize = process.env.DATABASE_URL
-  ? new Sequelize(process.env.DATABASE_URL, {
-      dialect: "postgres",
-      protocol: "postgres",
-      dialectOptions: {
-        ssl: {
-          require: true,
-          rejectUnauthorized: false,
-        },
-      },
-      logging: false,
-    })
-  : new Sequelize({
-      dialect: "sqlite",
-      storage: path.join(__dirname, "database.sqlite"),
-      logging: false,
-    });
+const dbUrl = process.env.DATABASE_URL;
+
+// Wrapper to trick Sequelize into accepting a URL for SQLite
+const { Database } = sqlite3;
+class CustomDatabase extends Database {
+  constructor(filename, ...args) {
+    if (filename === ':memory:' && dbUrl) {
+      super(dbUrl, ...args);
+    } else {
+      super(filename, ...args);
+    }
+  }
+}
+
+const customSqlite3 = {
+  ...sqlite3,
+  Database: CustomDatabase
+};
+
+const sequelize = new Sequelize({
+  dialect: "sqlite",
+  dialectModule: customSqlite3,
+  storage: dbUrl ? ":memory:" : path.join(__dirname, "database.sqlite"),
+  logging: false,
+});
 
 const Company = sequelize.define("Company", {
   name: { type: DataTypes.STRING, allowNull: false },
