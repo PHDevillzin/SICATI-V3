@@ -8,13 +8,10 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
+        proxy: {
+          '/api': 'http://localhost:3001'
+        }
       },
-      plugins: [react()],
-  server: {
-    proxy: {
-      '/api': 'http://localhost:3001'
-    }
-  },
       define: {
         'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
         'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
